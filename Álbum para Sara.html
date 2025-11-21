@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<!-- saved from url=(0047)file:///C:/Users/HP/Documents/galeria/love.html -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Álbum para Sara</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial;
+        background: radial-gradient(circle, #5a2c82, #2b0f3a);
+        overflow-x: hidden;
+        color: white;
+    }
+
+    .btn-abrir {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        padding: 14px 25px;
+        background: #ff4fa1;
+        border: none;
+        border-radius: 14px;
+        color: white;
+        font-size: 22px;
+        cursor: pointer;
+        box-shadow: 0 0 20px #ffb3e6;
+        z-index: 900;
+        animation: aparecer 1.5s ease-out, latido 1.4s infinite ease-in-out;
+    }
+
+    @keyframes aparecer {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes latido {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.12); }
+        100% { transform: scale(1); }
+    }
+
+    .carta {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(6px);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+        opacity: 0;
+        transition: 0.5s;
+    }
+
+    .contenido-carta {
+        width: 80%;
+        max-width: 600px;
+        background: rgba(255, 255, 255, 0.18);
+        padding: 30px;
+        border-radius: 18px;
+        box-shadow: 0 0 15px rgba(255,255,255,0.4);
+        text-align: center;
+        color: #fff;
+        font-size: 19px;
+        line-height: 1.5;
+        animation: zoomIn 0.6s ease-out;
+    }
+
+    @keyframes zoomIn {
+        from { transform: scale(0.6); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    .carta button {
+        margin-top: 15px;
+        padding: 10px 20px;
+        background: #8e44ad;
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-size: 17px;
+        cursor: pointer;
+        box-shadow: 0 0 10px #b47bd0;
+        transition: 0.3s;
+    }
+
+    .carta button:hover { transform: scale(1.1); }
+
+    .heart {
+        position: fixed;
+        top: 100vh;
+        font-size: 20px;
+        animation: floatUp 6s linear infinite;
+        opacity: 0.7;
+        color: pink;
+    }
+
+    @keyframes floatUp { from { transform: translateY(0); } to { transform: translateY(-120vh); } }
+
+    h1 { text-align: center; margin-top: 20px; text-shadow: 0 0 15px white; }
+
+    .galeria {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 25px;
+        width: 90%;
+        margin: auto;
+        margin-top: 40px;
+    }
+
+    .card {
+        width: 100%;
+        height: 250px;
+        perspective: 1000px;
+        cursor: pointer;
+    }
+
+    .inner {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transition: transform 1s;
+        transform-style: preserve-3d;
+    }
+
+    .card.girar .inner { transform: rotateY(180deg); }
+
+    .front, .back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 0 15px rgba(255,255,255,0.4);
+    }
+
+    .front img { width: 100%; height: 100%; object-fit: cover; }
+
+    .back {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(6px);
+        transform: rotateY(180deg);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 15px;
+        font-size: 18px;
+        text-align: center;
+    }
+</style>
+</head>
+
+<body>
+
+<audio id="musica" src="tu-musica.mp3"></audio>
+
+<button class="btn-abrir" onclick="abrirCarta()">Para ti ❤️</button>
+
+<div id="carta" class="carta">
+    <div class="contenido-carta">
+        <h2>💌 Para ti, Sara</h2>
+        <p id="texto-escrito"></p>
+        <button onclick="cerrarCarta()">Cerrar 💜</button>
+    </div>
+</div>
+
+<script>
+let mensaje = `Quiero que sepas que me gustas muchísimo, Sara ❤️✨.
+A veces no sé cómo acercarme a ti… me pongo nervioso, pero aun así,
+no puedo evitar pensar en lo hermosa que eres: tu sonrisa ilumina más
+que cualquier estrella ✨, tus ojos tienen una magia que no puedo explicar,
+y cada vez que te veo, siento algo bonito que no quiero ignorar.
+
+Dicen que “el que no arriesga no gana”… y yo quiero intentarlo contigo 🫶.
+Quizás después de esto tenga más vergüenza jaja 😅, pero prefiero decirlo,
+a guardármelo.`;
+
+let i = 0;
+
+function abrirCarta() {
+    const carta = document.getElementById("carta");
+    const texto = document.getElementById("texto-escrito");
+    const musica = document.getElementById("musica");
+
+    carta.style.display = "flex";
+    setTimeout(() => carta.style.opacity = "1", 50);
+
+    texto.innerHTML = "";
+    i = 0;
+    escribir();
+
+    musica.currentTime = 0;
+    musica.play();
+}
+
+function escribir() {
+    if (i < mensaje.length) {
+        document.getElementById("texto-escrito").innerHTML += mensaje.charAt(i);
+        i++;
+        setTimeout(escribir, 45);
+    }
+}
+
+function cerrarCarta() {
+    const carta = document.getElementById("carta");
+    const musica = document.getElementById("musica");
+
+    carta.style.opacity = "0";
+    musica.pause();
+    setTimeout(()=>{ carta.style.display = "none"; }, 500);
+}
+</script>
+
+<script>
+for (let i = 0; i < 25; i++) {
+    let h = document.createElement("div");
+    h.className = "heart";
+    h.style.left = Math.random() * 100 + "vw";
+    h.style.animationDelay = Math.random() * 5 + "s";
+    h.textContent = "❤️";
+    document.body.appendChild(h);
+}
+</script><div class="heart" style="left: 10.3294vw; animation-delay: 2.70858s;">❤️</div><div class="heart" style="left: 2.83018vw; animation-delay: 4.56951s;">❤️</div><div class="heart" style="left: 97.9939vw; animation-delay: 2.30231s;">❤️</div><div class="heart" style="left: 99.818vw; animation-delay: 1.71632s;">❤️</div><div class="heart" style="left: 62.2204vw; animation-delay: 3.87319s;">❤️</div><div class="heart" style="left: 6.10542vw; animation-delay: 2.35268s;">❤️</div><div class="heart" style="left: 7.89621vw; animation-delay: 2.76826s;">❤️</div><div class="heart" style="left: 54.204vw; animation-delay: 0.354438s;">❤️</div><div class="heart" style="left: 21.6624vw; animation-delay: 4.89812s;">❤️</div><div class="heart" style="left: 38.225vw; animation-delay: 3.75825s;">❤️</div><div class="heart" style="left: 58.1154vw; animation-delay: 2.44575s;">❤️</div><div class="heart" style="left: 97.4121vw; animation-delay: 0.793615s;">❤️</div><div class="heart" style="left: 41.3571vw; animation-delay: 2.30379s;">❤️</div><div class="heart" style="left: 14.2016vw; animation-delay: 0.492895s;">❤️</div><div class="heart" style="left: 50.6665vw; animation-delay: 2.02141s;">❤️</div><div class="heart" style="left: 76.3971vw; animation-delay: 0.703056s;">❤️</div><div class="heart" style="left: 16.1928vw; animation-delay: 3.32415s;">❤️</div><div class="heart" style="left: 61.1104vw; animation-delay: 3.17158s;">❤️</div><div class="heart" style="left: 15.7409vw; animation-delay: 1.25965s;">❤️</div><div class="heart" style="left: 58.778vw; animation-delay: 1.22772s;">❤️</div><div class="heart" style="left: 15.2274vw; animation-delay: 4.49213s;">❤️</div><div class="heart" style="left: 47.1285vw; animation-delay: 1.18865s;">❤️</div><div class="heart" style="left: 65.7978vw; animation-delay: 2.01913s;">❤️</div><div class="heart" style="left: 51.0564vw; animation-delay: 2.26021s;">❤️</div><div class="heart" style="left: 37.1599vw; animation-delay: 2.82593s;">❤️</div>
+
+<h1>Para Sara ❤️</h1>
+
+<div class="galeria">
+    <div class="card" onclick="this.classList.toggle(&#39;girar&#39;)">
+        <div class="inner"><div class="front"><img src="./Álbum para Sara_files/IMG-20251121-WA0001.jpg"></div>
+        <div class="back">Esa mirada que derrite a cualquiera.</div></div></div>
+
+    <div class="card" onclick="this.classList.toggle(&#39;girar&#39;)">
+        <div class="inner"><div class="front"><img src="./Álbum para Sara_files/IMG-20251121-WA0003.jpg"></div>
+        <div class="back">Eres una persona única y especial.</div></div></div>
+
+    <div class="card" onclick="this.classList.toggle(&#39;girar&#39;)">
+        <div class="inner"><div class="front"><img src="./Álbum para Sara_files/IMG-20251121-WA0004.jpg"></div>
+        <div class="back">Cada foto tuya cuenta una historia bonita.</div></div></div>
+
+    <div class="card" onclick="this.classList.toggle(&#39;girar&#39;)">
+        <div class="inner"><div class="front"><img src="./Álbum para Sara_files/IMG-20251121-WA0005.jpg"></div>
+        <div class="back">Me gustas más de lo que imaginas.</div></div></div>
+
+    <div class="card" onclick="this.classList.toggle(&#39;girar&#39;)">
+        <div class="inner"><div class="front"><img src="./Álbum para Sara_files/IMG-20251121-WA0006.jpg"></div>
+        <div class="back">Esa carita que más me encanta.</div></div></div>
+
+    <div class="card" onclick="this.classList.toggle(&#39;girar&#39;)">
+        <div class="inner"><div class="front"><img src="./Álbum para Sara_files/IMG-20251121-WA0007.jpg"></div>
+        <div class="back">Gracias por existir, Sara.</div></div></div>
+
+    <div class="card" onclick="this.classList.toggle(&#39;girar&#39;)">
+        <div class="inner"><div class="front"><img src="./Álbum para Sara_files/IMG-20251121-WA0008.jpg"></div>
+        <div class="back">Eres arte en forma de persona.</div></div></div>
+
+    <div class="card" onclick="this.classList.toggle(&#39;girar&#39;)">
+        <div class="inner"><div class="front"><img src="./Álbum para Sara_files/IMG-20251121-WA0009.jpg"></div>
+        <div class="back">Cada día brillas más.</div></div></div>
+
+    <div class="card" onclick="this.classList.toggle(&#39;girar&#39;)">
+        <div class="inner"><div class="front"><img src="./Álbum para Sara_files/sara.jpg"></div>
+        <div class="back">Tu sonrisa siempre será preciosa en los ojos correctos.</div></div></div>
+</div>
+
+
+
+
+</body></html>
